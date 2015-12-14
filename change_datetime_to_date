@@ -1,0 +1,31 @@
+import csv
+from csv import DictWriter
+from csv import DictReader
+
+#stores csv data as a list of dictionaries
+dictList = []
+
+#stores data from dictList once you've made the modifications
+newdictList = []
+
+# original_file has columns: cons_id,email,create_dt. create_dt is of the form YYYY-MM-DD HH:MM:SS, e.g. 2015-11-03 15:12:01
+with open('original_file', 'r') as csvfile:
+	reader = csv.DictReader(csvfile)
+	for row in reader:
+		dictList.append(row)
+
+for dictionary in dictList:
+  # Split create_dt on " " (space), then take the first element of that result since that's the date.
+	dictionary['date'] = dictionary['create_dt'].split(' ')[0]
+	# Delete the create_dt so that we don't add that to our output file.
+	del dictionary['create_dt']
+	#add our modified dictionary to newdictList
+	newdictList.append(dictionary)
+
+#writes new file
+with open('file_with_date_only.csv','w') as csvfile:
+	fieldnames = ['cons_id','email', 'date']
+	writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+	writer.writeheader()
+	for row in newdictList:
+		writer.writerow(row)
